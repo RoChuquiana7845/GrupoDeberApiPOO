@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Juego de piedra, papel y tijera</title>
     <link rel="stylesheet" href="./styles/style.css">
-    <script defer src="./js/main.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
     <header> 
@@ -42,6 +42,12 @@
             <p id="gana-punto"> Ganaste un punto! 🔥</p>
         </div>
         <button class="btn disabled" id="reiniciar">Reiniciar Juego</button>
+        <button class="btn disabled" id="finalizar">Finalizar Juego</button>
+        <div class="estadistica disabled">
+            <h1>Estadística del juego 🤗</h1>
+            <p><span class="mensaje-despedida"></span></p>
+        </div>
     </main>
+    <script src="./js/main.js"></script>
 </body>
 </html>

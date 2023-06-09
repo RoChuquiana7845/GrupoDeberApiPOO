@@ -1,5 +1,5 @@
 class Game {
-    constructor(player, machinePlayer, instructions, scoreBoard, joystick, restartGameButton) { 
+    constructor(player, machinePlayer, instructions, scoreBoard, joystick, restartGameButton, gameEndButton) { 
         this.player = player;
         this.machinePlayer = machinePlayer;
         this.instructions = instructions
@@ -7,6 +7,7 @@ class Game {
         this.joystick = joystick
         this.restartGameButton = restartGameButton
         this.rounds = 0;
+        this.gameEndButton = gameEndButton
     }
     
     startGame() { 
@@ -14,6 +15,7 @@ class Game {
         this.joystick.addEventListener('click', () => {
             this.machinePlayer.playMachine();
             this.winnerRound();
+            this.exitGamebutton();
         })
     }
 
@@ -34,16 +36,16 @@ class Game {
             this.scoreBoard.messageForRoundWinner.innerText = "¡Empate! 😱"
         }  
         if (this.rounds > 5) {
-            this.checkGameWinner();
+            this.checkGameWinner(5);
         };
         this.scoreBoard.showRoundResults()
     }
 
-    checkGameWinner() { 
-        if (this.player.points == 5) { 
+    checkGameWinner(max) { 
+        if (this.player.points == max) { 
             this.instructions.innerText = "🔥 ¡Ganaste el juego! 🔥";
             this.endGame()
-        } else if (this.machinePlayer.points == 5) { 
+        } else if (this.machinePlayer.points == max) { 
             this.instructions.innerText = "😭 ¡La computadora ganó el juego! 😭";
             this.endGame()
         } 
@@ -64,6 +66,16 @@ class Game {
         this.player.score.innerText = 0;
         this.machinePlayer.score.innerText = 0;
         this.instructions.innerText = "El primero en llegar a 5 puntos gana.";
+    }
+
+    exitGamebutton() { 
+        this.gameEndButton.classList.remove('disabled');
+        this.gameEndButton.addEventListener('click', ()=> {
+            this.gameEndButton.classList.add('disabled');
+            if (this.scoreBoard.showGameStats(this.machinePlayer.score.innerText, this.player.score.innerText)) {
+                this.endGame();
+            }
+        })
     }
 }
 
@@ -122,14 +134,22 @@ class MachinePlayer extends Player {
 
 
 class ScoreBoard {
-    constructor(messageForRoundWinner, roundResults) {
+    constructor(messageForRoundWinner, roundResults, gameStats, message) {
         this.messageForRoundWinner = messageForRoundWinner;
         this.roundResults = roundResults;
-        
+        this.gameStats = gameStats;
+        this.message = message;
     }
 
     showRoundResults() { 
         this.roundResults.classList.remove('disabled');
+    }
+
+    showGameStats(puntosPc, puntosUser) { 
+        this.gameStats.classList.remove('disabled');
+        this.roundResults.classList.add('disabled');
+        this.message.innerText = `La computadora gano ${puntosPc} partidas 🆚 Usted gano ${puntosUser} partidas`;
+        return true
     }
 }
 
@@ -137,7 +157,9 @@ class ScoreBoard {
 window.addEventListener('load', () => {
     const user = new UserPlayer('user', document.querySelector('#puntos-usuario'), document.querySelector('#eleccion-usuario'), document.querySelectorAll(".arma"));
     const pc = new MachinePlayer('machine', document.querySelector('#puntos-computadora'), document.querySelector('#eleccion-computadora'), document.querySelectorAll(".arma"));
-    const scoreBoard1 = new ScoreBoard(document.querySelector("#gana-punto"), document.querySelector("#mensaje"));
-    const game = new Game(user, pc, document.querySelector("#instrucciones"), scoreBoard1, document.querySelector("#elegi-tu-arma"),document.querySelector("#reiniciar"));
+    const scoreBoard1 = new ScoreBoard(document.querySelector("#gana-punto"), document.querySelector("#mensaje"), document.querySelector(".estadistica"), document.querySelector(".mensaje-despedida"));
+    const game = new Game(user, pc, document.querySelector("#instrucciones"), scoreBoard1, document.querySelector("#elegi-tu-arma"),document.querySelector("#reiniciar"), document.querySelector("#finalizar"));
     game.startGame()
 });
+
+
